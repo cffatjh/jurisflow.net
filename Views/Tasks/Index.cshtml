@@ -1,0 +1,229 @@
+@model JurisFlowASP.ViewModels.TaskBoardViewModel
+@{
+    ViewData["Title"] = "Görevler";
+    var totalTasks = Model.ToDo.Count + Model.InProgress.Count + Model.Review.Count + Model.Done.Count;
+    var completedPercent = totalTasks > 0 ? (Model.Done.Count * 100 / totalTasks) : 0;
+}
+
+<!-- Header Card -->
+<div class="card mb-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%); border: none;">
+    <div class="card-body py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-4">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Görev Durumu</h5>
+                        <p class="text-muted mb-0">Bugün @Model.ToDo.Count görev tamamlanmayı bekliyor</p>
+                    </div>
+                    <div class="d-none d-md-block">
+                        <div class="d-flex align-items-center gap-4">
+                            <div class="text-center">
+                                <div class="fs-4 fw-bold text-secondary">@Model.ToDo.Count</div>
+                                <small class="text-muted">Yapılacak</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fs-4 fw-bold text-primary">@Model.InProgress.Count</div>
+                                <small class="text-muted">Devam Eden</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fs-4 fw-bold text-warning">@Model.Review.Count</div>
+                                <small class="text-muted">İnceleme</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fs-4 fw-bold text-success">@Model.Done.Count</div>
+                                <small class="text-muted">Tamamlandı</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+                    <!-- Progress Circle -->
+                    <div class="position-relative d-none d-md-block" style="width: 60px; height: 60px;">
+                        <svg viewBox="0 0 36 36" class="w-100 h-100">
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                  fill="none" stroke="#e2e8f0" stroke-width="3"/>
+                            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                  fill="none" stroke="#22c55e" stroke-width="3" 
+                                  stroke-dasharray="@completedPercent, 100" stroke-linecap="round"/>
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle text-success fw-bold small">
+                            @completedPercent%
+                        </div>
+                    </div>
+                    
+                    <!-- View Toggle -->
+                    <div class="btn-group">
+                        <a asp-action="Index" class="btn btn-primary btn-sm">
+                            <i class="bi bi-kanban me-1"></i>Kanban
+                        </a>
+                        <a asp-action="List" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-list me-1"></i>Liste
+                        </a>
+                    </div>
+                    
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i>Yeni
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kanban Board -->
+<div class="row g-3">
+    <!-- To Do -->
+    <div class="col-md-6 col-lg-3">
+        <div class="kanban-column">
+            <div class="kanban-header">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px;">
+                        <i class="bi bi-circle text-secondary" style="font-size: 0.75rem;"></i>
+                    </div>
+                    <span class="fw-bold">To Do</span>
+                </div>
+                <span class="count">@Model.ToDo.Count</span>
+            </div>
+            <div class="kanban-body" data-status="To Do">
+                @foreach (var task in Model.ToDo)
+                {
+                    @await Html.PartialAsync("_TaskCard", task)
+                }
+                @if (!Model.ToDo.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                        <small>Görev yok</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- In Progress -->
+    <div class="col-md-6 col-lg-3">
+        <div class="kanban-column">
+            <div class="kanban-header" style="border-bottom: 3px solid #3b82f6;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-25 d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px;">
+                        <i class="bi bi-arrow-repeat text-primary" style="font-size: 0.75rem;"></i>
+                    </div>
+                    <span class="fw-bold">In Progress</span>
+                </div>
+                <span class="count">@Model.InProgress.Count</span>
+            </div>
+            <div class="kanban-body" data-status="In Progress">
+                @foreach (var task in Model.InProgress)
+                {
+                    @await Html.PartialAsync("_TaskCard", task)
+                }
+                @if (!Model.InProgress.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-hourglass-split fs-4 d-block mb-2"></i>
+                        <small>Devam eden yok</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Review -->
+    <div class="col-md-6 col-lg-3">
+        <div class="kanban-column">
+            <div class="kanban-header" style="border-bottom: 3px solid #f59e0b;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-25 d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px;">
+                        <i class="bi bi-eye text-warning" style="font-size: 0.75rem;"></i>
+                    </div>
+                    <span class="fw-bold">Review</span>
+                </div>
+                <span class="count">@Model.Review.Count</span>
+            </div>
+            <div class="kanban-body" data-status="Review">
+                @foreach (var task in Model.Review)
+                {
+                    @await Html.PartialAsync("_TaskCard", task)
+                }
+                @if (!Model.Review.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-clipboard-check fs-4 d-block mb-2"></i>
+                        <small>İncelemede yok</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Done -->
+    <div class="col-md-6 col-lg-3">
+        <div class="kanban-column">
+            <div class="kanban-header" style="border-bottom: 3px solid #22c55e;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-25 d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px;">
+                        <i class="bi bi-check-circle text-success" style="font-size: 0.75rem;"></i>
+                    </div>
+                    <span class="fw-bold">Done</span>
+                </div>
+                <span class="count">@Model.Done.Count</span>
+            </div>
+            <div class="kanban-body" data-status="Done">
+                @foreach (var task in Model.Done)
+                {
+                    @await Html.PartialAsync("_TaskCard", task)
+                }
+                @if (!Model.Done.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-trophy fs-4 d-block mb-2"></i>
+                        <small>Tamamlanan yok</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Enhanced drag and drop
+        document.querySelectorAll('.kanban-card').forEach(card => {
+            card.draggable = true;
+            card.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('taskId', card.dataset.id);
+                card.classList.add('opacity-50');
+            });
+            card.addEventListener('dragend', e => {
+                card.classList.remove('opacity-50');
+            });
+        });
+
+        document.querySelectorAll('.kanban-body').forEach(column => {
+            column.addEventListener('dragover', e => {
+                e.preventDefault();
+                column.closest('.kanban-column').classList.add('dragover');
+            });
+            column.addEventListener('dragleave', e => {
+                column.closest('.kanban-column').classList.remove('dragover');
+            });
+            column.addEventListener('drop', async e => {
+                column.closest('.kanban-column').classList.remove('dragover');
+                const taskId = e.dataTransfer.getData('taskId');
+                const newStatus = column.dataset.status;
+                
+                const response = await fetch('/Tasks/UpdateStatus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId, newStatus })
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+        });
+    </script>
+}

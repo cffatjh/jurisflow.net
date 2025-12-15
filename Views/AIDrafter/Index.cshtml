@@ -1,0 +1,241 @@
+@{
+    ViewData["Title"] = "AI Belge Asistanı";
+    var matters = ViewBag.Matters as List<JurisFlowASP.Models.Matter> ?? new();
+    var templates = ViewBag.Templates as List<JurisFlowASP.Models.DocumentTemplate> ?? new();
+}
+
+<div class="row g-4">
+    <!-- Left Panel - Input -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-robot me-2 text-primary"></i>AI Belge Oluşturucu
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="generateForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label">Belge Türü</label>
+                        <select name="documentType" id="documentType" class="form-select" required>
+                            <option value="">Seçiniz</option>
+                            <option value="Dilekçe">Dilekçe</option>
+                            <option value="Sözleşme">Sözleşme</option>
+                            <option value="İhtarname">İhtarname</option>
+                            <option value="Vekaletname">Vekaletname</option>
+                            <option value="Savunma">Savunma</option>
+                            <option value="Talep">Talep Yazısı</option>
+                            <option value="Rapor">Hukuki Görüş/Rapor</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">İlgili Dava (Opsiyonel)</label>
+                        <select name="matterId" id="matterId" class="form-select">
+                            <option value="">Seçiniz - Dava bilgileri otomatik eklenir</option>
+                            @foreach (var matter in matters)
+                            {
+                                <option value="@matter.Id">@matter.CaseNumber - @matter.Name (@matter.Client?.Name)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Şablon (Opsiyonel)</label>
+                        <select name="templateId" id="templateId" class="form-select">
+                            <option value="">Şablon kullanma</option>
+                            @foreach (var template in templates)
+                            {
+                                <option value="@template.Id">[@template.Category] @template.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Talimatlarınız *</label>
+                        <textarea name="prompt" id="prompt" class="form-control" rows="6" required
+                                  placeholder="Örnek: Kiracının kira bedelini 3 aydır ödememesi nedeniyle tahliye davası açmak istiyorum. Kiracı adı Ahmet Yılmaz, adres Ankara Çankaya..."></textarea>
+                        <small class="text-muted">Ne kadar detaylı yazarsanız, belge o kadar doğru olur.</small>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">
+                            <i class="bi bi-magic me-2"></i> Belge Oluştur
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Powered by Google Gemini AI</small>
+                    <a asp-action="Templates" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-file-earmark-text me-1"></i> Şablonlar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel - Output -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-file-earmark-text me-2"></i>Oluşturulan Belge
+                </h5>
+                <div id="outputActions" style="display: none;">
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="copyContent()">
+                        <i class="bi bi-clipboard"></i> Kopyala
+                    </button>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#saveModal">
+                        <i class="bi bi-save"></i> Kaydet
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="loadingState" style="display: none;" class="text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p class="text-muted">AI belge oluşturuyor, lütfen bekleyin...</p>
+                    <small class="text-muted">Bu işlem 10-30 saniye sürebilir</small>
+                </div>
+
+                <div id="emptyState" class="text-center py-5">
+                    <i class="bi bi-file-earmark-plus fs-1 text-muted"></i>
+                    <p class="text-muted mt-3">Henüz belge oluşturulmadı</p>
+                    <p class="text-muted small">Sol panelden talimatlarınızı girin ve "Belge Oluştur" butonuna tıklayın</p>
+                </div>
+
+                <div id="errorState" style="display: none;" class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <span id="errorMessage"></span>
+                </div>
+
+                <div id="outputContent" style="display: none;">
+                    <pre id="generatedContent" class="bg-light p-4 rounded" style="white-space: pre-wrap; font-family: inherit; max-height: 600px; overflow-y: auto;"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Modal -->
+<div class="modal fade" id="saveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Belgeyi Kaydet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="saveForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Belge Adı *</label>
+                        <input type="text" name="name" id="saveName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">İlgili Dava</label>
+                        <select name="matterId" id="saveMatterId" class="form-select">
+                            <option value="">Seçiniz</option>
+                            @foreach (var matter in matters)
+                            {
+                                <option value="@matter.Id">@matter.CaseNumber - @matter.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+let generatedContent = '';
+
+document.getElementById('generateForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('errorState').style.display = 'none';
+    document.getElementById('outputContent').style.display = 'none';
+    document.getElementById('outputActions').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    
+    const formData = new FormData(this);
+    
+    try {
+        const response = await fetch('/AIDrafter/Generate', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        document.getElementById('loadingState').style.display = 'none';
+        
+        if (result.success) {
+            generatedContent = result.content;
+            document.getElementById('generatedContent').textContent = result.content;
+            document.getElementById('outputContent').style.display = 'block';
+            document.getElementById('outputActions').style.display = 'block';
+            
+            // Pre-fill save form
+            const docType = document.getElementById('documentType').value;
+            document.getElementById('saveName').value = docType + ' - ' + new Date().toLocaleDateString('tr-TR');
+            document.getElementById('saveMatterId').value = document.getElementById('matterId').value;
+        } else {
+            document.getElementById('errorMessage').textContent = result.error;
+            document.getElementById('errorState').style.display = 'block';
+        }
+    } catch (error) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('errorMessage').textContent = 'Bir hata oluştu: ' + error.message;
+        document.getElementById('errorState').style.display = 'block';
+    }
+    
+    btn.disabled = false;
+});
+
+document.getElementById('saveForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    formData.append('content', generatedContent);
+    
+    const response = await fetch('/AIDrafter/SaveDocument', {
+        method: 'POST',
+        body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+        bootstrap.Modal.getInstance(document.getElementById('saveModal')).hide();
+        alert('Belge başarıyla kaydedildi!');
+    } else {
+        alert('Hata: ' + result.error);
+    }
+});
+
+function copyContent() {
+    navigator.clipboard.writeText(generatedContent);
+    alert('İçerik panoya kopyalandı!');
+}
+</script>
+}

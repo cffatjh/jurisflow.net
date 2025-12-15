@@ -1,0 +1,37 @@
+﻿  Geri y├╝klenecek projeler belirleniyor...
+  Geri y├╝kleme i├ğin t├╝m projeler g├╝ncel.
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Services\AuthService.cs(3,7): warning CS0105: 'System.Security.Cryptography' i├ğin using y├Ânergesi bu ad alan─▒nda daha ├Ânce g├Âr├╝nd├╝ [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Auth\Login.cshtml(39,10): error CS0103: 'keyframes' ad─▒ ge├ğerli ba─şlamda yok [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Auth\Login.cshtml(65,10): error CS0103: 'keyframes' ad─▒ ge├ğerli ba─şlamda yok [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Auth\Login.cshtml(187,10): error CS0103: 'keyframes' ad─▒ ge├ğerli ba─şlamda yok [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Billing\Create.cshtml(26,57): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Billing\Create.cshtml(49,30): warning CS8604: 'bool Enumerable.Any<TimeEntry>(IEnumerable<TimeEntry> source)' i├ğindeki 'source' parametresi i├ğin olas─▒ null ba┼şvuru ba─ş─▒ms─▒z de─şi┼şkeni. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\TimeTracker\Index.cshtml(107,53): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Documents\Index.cshtml(10,37): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\Edit.cshtml(39,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Matters\Edit.cshtml(35,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\Create.cshtml(28,57): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\Create.cshtml(39,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Matters\Create.cshtml(32,57): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Matters\Create.cshtml(44,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+
+Olu┼şturma BA┼ŞARISIZ OLDU.
+
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Services\AuthService.cs(3,7): warning CS0105: 'System.Security.Cryptography' i├ğin using y├Ânergesi bu ad alan─▒nda daha ├Ânce g├Âr├╝nd├╝ [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Billing\Create.cshtml(26,57): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Billing\Create.cshtml(49,30): warning CS8604: 'bool Enumerable.Any<TimeEntry>(IEnumerable<TimeEntry> source)' i├ğindeki 'source' parametresi i├ğin olas─▒ null ba┼şvuru ba─ş─▒ms─▒z de─şi┼şkeni. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\TimeTracker\Index.cshtml(107,53): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Documents\Index.cshtml(10,37): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\Edit.cshtml(39,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Matters\Edit.cshtml(35,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\Create.cshtml(28,57): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\Create.cshtml(39,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Matters\Create.cshtml(32,57): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Matters\Create.cshtml(44,55): warning CS8602: Olas─▒ bir null ba┼şvurunun ba┼şvurma i┼şlemi. [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Auth\Login.cshtml(39,10): error CS0103: 'keyframes' ad─▒ ge├ğerli ba─şlamda yok [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Auth\Login.cshtml(65,10): error CS0103: 'keyframes' ad─▒ ge├ğerli ba─şlamda yok [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Auth\Login.cshtml(187,10): error CS0103: 'keyframes' ad─▒ ge├ğerli ba─şlamda yok [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+    11 Uyar─▒
+    3 Hata
+
+Ge├ğen S├╝re 00:00:02.12

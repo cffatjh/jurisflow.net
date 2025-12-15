@@ -1,0 +1,118 @@
+@model List<JurisFlowASP.ViewModels.CalendarEventViewModel>
+@{
+    ViewData["Title"] = "Takvim";
+    var month = (int)ViewBag.Month;
+    var year = (int)ViewBag.Year;
+    var firstDay = new DateTime(year, month, 1);
+    var daysInMonth = DateTime.DaysInMonth(year, month);
+    var startDayOfWeek = (int)firstDay.DayOfWeek;
+    startDayOfWeek = startDayOfWeek == 0 ? 7 : startDayOfWeek; // Monday start
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <a asp-action="Index" asp-route-month="@(month == 1 ? 12 : month - 1)" asp-route-year="@(month == 1 ? year - 1 : year)" class="btn btn-outline-secondary">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <h4 class="mb-0 fw-semibold">@ViewBag.MonthName</h4>
+        <a asp-action="Index" asp-route-month="@(month == 12 ? 1 : month + 1)" asp-route-year="@(month == 12 ? year + 1 : year)" class="btn btn-outline-secondary">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Yeni Etkinlik
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <!-- Day Headers -->
+        <div class="calendar-grid border-bottom">
+            @foreach (var day in new[] { "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz" })
+            {
+                <div class="text-center py-2 fw-medium text-muted small">@day</div>
+            }
+        </div>
+
+        <!-- Calendar Days -->
+        <div class="calendar-grid">
+            @{
+                var today = DateTime.Today;
+                var dayCounter = 1;
+                var totalCells = Math.Ceiling((startDayOfWeek - 1 + daysInMonth) / 7.0) * 7;
+            }
+            
+            @for (int i = 1; i <= totalCells; i++)
+            {
+                var isCurrentMonth = i >= startDayOfWeek && dayCounter <= daysInMonth;
+                var currentDate = isCurrentMonth ? new DateTime(year, month, dayCounter) : (DateTime?)null;
+                var isToday = currentDate.HasValue && currentDate.Value.Date == today;
+                var dayEvents = currentDate.HasValue ? Model.Where(e => e.Date.Date == currentDate.Value.Date).ToList() : new List<JurisFlowASP.ViewModels.CalendarEventViewModel>();
+                
+                <div class="calendar-day @(isToday ? "today" : "") @(!isCurrentMonth ? "other-month" : "")">
+                    @if (isCurrentMonth)
+                    {
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="@(isToday ? "badge bg-primary rounded-circle" : "")">@dayCounter</span>
+                            @if (dayEvents.Any())
+                            {
+                                <span class="badge bg-secondary rounded-pill">@dayEvents.Count</span>
+                            }
+                        </div>
+                        @foreach (var ev in dayEvents.Take(3))
+                        {
+                            <div class="calendar-event event-@ev.Type.ToLower()" title="@ev.Title">
+                                @ev.Title
+                            </div>
+                        }
+                        dayCounter++;
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Events List -->
+<div class="card mt-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Bu Ayın Etkinlikleri</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <div class="list-group list-group-flush">
+                @foreach (var ev in Model.OrderBy(e => e.Date))
+                {
+                    <div class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="calendar-event event-@ev.Type.ToLower() me-3">@ev.Type</div>
+                            <div>
+                                <div class="fw-medium">@ev.Title</div>
+                                <small class="text-muted">@ev.Date.ToString("dd MMMM yyyy HH:mm")</small>
+                                @if (!string.IsNullOrEmpty(ev.MatterName))
+                                {
+                                    <span class="badge bg-light text-dark ms-2">@ev.MatterName</span>
+                                }
+                            </div>
+                        </div>
+                        @if (!ev.Id.StartsWith("task-"))
+                        {
+                            <form asp-action="Delete" asp-route-id="@ev.Id" method="post" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="p-4 text-center text-muted">
+                <i class="bi bi-calendar-x fs-2 opacity-50"></i>
+                <p class="mb-0 mt-2">Bu ay etkinlik yok</p>
+            </div>
+        }
+    </div>
+</div>

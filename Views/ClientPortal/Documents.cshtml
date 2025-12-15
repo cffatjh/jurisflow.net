@@ -1,0 +1,66 @@
+@model List<JurisFlowASP.Models.Document>
+@{
+    Layout = "~/Views/ClientPortal/_PortalLayout.cshtml";
+    ViewData["Title"] = "Dokümanlar";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Dokümanlarım (@Model.Count)</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-file-earmark-x fs-1 text-muted"></i>
+                <p class="text-muted mt-2">Henüz doküman bulunmuyor</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Dosya Adı</th>
+                            <th>Dava</th>
+                            <th>Boyut</th>
+                            <th>Tarih</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var doc in Model)
+                        {
+                            var iconClass = doc.MimeType switch
+                            {
+                                var m when m.Contains("pdf") => "bi-file-earmark-pdf text-danger",
+                                var m when m.Contains("word") || m.Contains("document") => "bi-file-earmark-word text-primary",
+                                var m when m.Contains("excel") || m.Contains("sheet") => "bi-file-earmark-excel text-success",
+                                var m when m.Contains("image") => "bi-file-earmark-image text-info",
+                                _ => "bi-file-earmark text-secondary"
+                            };
+                            var sizeStr = doc.FileSize < 1024 ? $"{doc.FileSize} B" :
+                                          doc.FileSize < 1048576 ? $"{doc.FileSize / 1024.0:F1} KB" :
+                                          $"{doc.FileSize / 1048576.0:F1} MB";
+                            <tr>
+                                <td>
+                                    <i class="bi @iconClass me-2"></i>
+                                    <strong>@doc.Name</strong>
+                                </td>
+                                <td>@(doc.Matter?.Name ?? "-")</td>
+                                <td><small class="text-muted">@sizeStr</small></td>
+                                <td>@doc.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <a href="/Documents/Download/@doc.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

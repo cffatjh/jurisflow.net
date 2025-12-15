@@ -1,0 +1,209 @@
+@model JurisFlowASP.Models.Matter
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>Tüm Davalar
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Main Info -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1">@Model.Name</h4>
+                    <code class="text-muted">@Model.CaseNumber</code>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-pencil me-1"></i>Düzenle
+                    </a>
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Bu davayı silmek istediğinize emin misiniz?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash me-1"></i>Sil
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Müvekkil</small>
+                        <a asp-controller="Clients" asp-action="Details" asp-route-id="@Model.ClientId" class="fw-medium text-decoration-none">
+                            @Model.Client?.Name
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Sorumlu Avukat</small>
+                        <span class="fw-medium">@Model.ResponsibleAttorney</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Durum</small>
+                        <span class="badge badge-status badge-@Model.Status.ToLower()">@Model.Status</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Uygulama Alanı</small>
+                        <span>@Model.PracticeArea</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Açılış Tarihi</small>
+                        <span>@Model.OpenDate.ToString("dd.MM.yyyy")</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Ücret Yapısı</small>
+                        <span>@Model.FeeStructure</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Saatlik Ücret</small>
+                        <span class="fw-medium">₺@Model.BillableRate.ToString("N2")</span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Trust Bakiyesi</small>
+                        <span class="fw-medium text-success">₺@Model.TrustBalance.ToString("N2")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks -->
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-check2-square me-2"></i>Görevler (@Model.Tasks.Count)</h5>
+                <a asp-controller="Tasks" asp-action="Create" asp-route-matterId="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus"></i> Ekle
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Tasks.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var task in Model.Tasks.OrderByDescending(t => t.CreatedAt).Take(5))
+                        {
+                            <div class="list-group-item d-flex align-items-center">
+                                <span class="badge badge-@task.Priority.ToLower() me-3">@task.Priority</span>
+                                <div class="flex-grow-1">
+                                    <div class="fw-medium">@task.Title</div>
+                                    @if (task.DueDate.HasValue)
+                                    {
+                                        <small class="text-muted">Bitiş: @task.DueDate.Value.ToString("dd.MM.yyyy")</small>
+                                    }
+                                </div>
+                                <span class="badge badge-status badge-@task.Status.ToLower().Replace(" ", "-")">@task.Status</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-check-circle fs-2 opacity-50"></i>
+                        <p class="mb-0 mt-2">Henüz görev eklenmemiş</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-file-earmark me-2"></i>Dokümanlar (@Model.Documents.Count)</h5>
+                <a asp-controller="Documents" asp-action="Upload" asp-route-matterId="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-upload"></i> Yükle
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Documents.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var doc in Model.Documents.OrderByDescending(d => d.CreatedAt).Take(5))
+                        {
+                            <a asp-controller="Documents" asp-action="Preview" asp-route-id="@doc.Id" class="list-group-item list-group-item-action d-flex align-items-center">
+                                <i class="bi bi-file-earmark-text fs-4 text-primary me-3"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-medium">@doc.Name</div>
+                                    <small class="text-muted">@doc.FileName</small>
+                                </div>
+                                <small class="text-muted">@doc.CreatedAt.ToString("dd.MM.yyyy")</small>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-folder-x fs-2 opacity-50"></i>
+                        <p class="mb-0 mt-2">Henüz doküman eklenmemiş</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Quick Stats -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">Hızlı İstatistikler</h6>
+            </div>
+            <div class="card-body">
+                @{
+                    var totalHours = Model.TimeEntries.Sum(t => t.Duration) / 60.0m;
+                    var totalBillable = Model.TimeEntries.Sum(t => (t.Duration / 60.0m) * t.Rate);
+                    var totalExpenses = Model.Expenses.Sum(e => e.Amount);
+                }
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Toplam Saat</span>
+                    <span class="fw-medium">@totalHours.ToString("N1") saat</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Faturalanabilir</span>
+                    <span class="fw-medium text-success">₺@totalBillable.ToString("N2")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Masraflar</span>
+                    <span class="fw-medium">₺@totalExpenses.ToString("N2")</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <span class="fw-semibold">Toplam</span>
+                    <span class="fw-bold text-primary">₺@((totalBillable + totalExpenses).ToString("N2"))</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events -->
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Etkinlikler</h6>
+                <a asp-controller="Calendar" asp-action="Create" asp-route-matterId="@Model.Id" class="btn btn-sm btn-link p-0">
+                    <i class="bi bi-plus"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Events.Any())
+                {
+                    @foreach (var ev in Model.Events.OrderBy(e => e.Date).Take(3))
+                    {
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="calendar-event event-@ev.Type.ToLower() me-2">@ev.Type</div>
+                            <div>
+                                <div class="small fw-medium">@ev.Title</div>
+                                <small class="text-muted">@ev.Date.ToString("dd MMM")</small>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted text-center mb-0">Etkinlik yok</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

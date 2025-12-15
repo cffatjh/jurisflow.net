@@ -1,0 +1,62 @@
+@model List<JurisFlowASP.Models.Matter>
+@{
+    Layout = "~/Views/ClientPortal/_PortalLayout.cshtml";
+    ViewData["Title"] = "Davalarım";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-folder me-2"></i>Davalarım (@Model.Count)</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-folder-x fs-1 text-muted"></i>
+                <p class="text-muted mt-2">Henüz dava kaydı bulunmuyor</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Dosya No</th>
+                            <th>Dava Adı</th>
+                            <th>Uzmanlık Alanı</th>
+                            <th>Durum</th>
+                            <th>Açılış Tarihi</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var matter in Model)
+                        {
+                            var statusClass = matter.Status switch
+                            {
+                                "Open" => "bg-success",
+                                "Pending" => "bg-warning text-dark",
+                                "Trial" => "bg-info",
+                                "Closed" => "bg-secondary",
+                                _ => "bg-primary"
+                            };
+                            <tr>
+                                <td><strong>@matter.CaseNumber</strong></td>
+                                <td>@matter.Name</td>
+                                <td><span class="badge bg-light text-dark">@matter.PracticeArea</span></td>
+                                <td><span class="badge @statusClass">@matter.Status</span></td>
+                                <td>@matter.OpenDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <a asp-action="MatterDetails" asp-route-id="@matter.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Detay
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

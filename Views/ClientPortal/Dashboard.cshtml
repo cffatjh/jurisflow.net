@@ -1,0 +1,139 @@
+@model JurisFlowASP.Models.Client
+@{
+    Layout = "~/Views/ClientPortal/_PortalLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row g-4 mb-4">
+    <!-- Stat Cards -->
+    <div class="col-md-4">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-white-50">Aktif Davalar</h6>
+                        <h2 class="mb-0">@ViewBag.ActiveMatters</h2>
+                    </div>
+                    <i class="bi bi-folder fs-1 text-white-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-dark opacity-75">Toplam Fatura</h6>
+                        <h2 class="mb-0">@ViewBag.TotalInvoices</h2>
+                    </div>
+                    <i class="bi bi-receipt fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-white-50">Bekleyen Ödeme</h6>
+                        <h2 class="mb-0">@ViewBag.PendingInvoices.ToString("C0")</h2>
+                    </div>
+                    <i class="bi bi-credit-card fs-1 text-white-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Matters -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-folder me-2"></i>Davalarınız</h5>
+                <a asp-action="Matters" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Matters?.Any() == true)
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var matter in Model.Matters.Take(5))
+                        {
+                            var statusClass = matter.Status switch
+                            {
+                                "Open" => "bg-success",
+                                "Pending" => "bg-warning text-dark",
+                                "Closed" => "bg-secondary",
+                                _ => "bg-primary"
+                            };
+                            <a asp-action="MatterDetails" asp-route-id="@matter.Id" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@matter.Name</strong>
+                                        <br><small class="text-muted">@matter.CaseNumber</small>
+                                    </div>
+                                    <span class="badge @statusClass">@matter.Status</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-folder-x fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Henüz dava kaydı yok</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Invoices -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Son Faturalar</h5>
+                <a asp-action="Invoices" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Invoices?.Any() == true)
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var invoice in Model.Invoices.OrderByDescending(i => i.DueDate).Take(5))
+                        {
+                            var statusClass = invoice.Status switch
+                            {
+                                "Paid" => "bg-success",
+                                "Overdue" => "bg-danger",
+                                "Sent" => "bg-warning text-dark",
+                                _ => "bg-secondary"
+                            };
+                            <a asp-action="Invoices" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@invoice.Number</strong>
+                                        <br><small class="text-muted">Vade: @invoice.DueDate.ToString("dd MMM yyyy")</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge @statusClass">@invoice.Status</span>
+                                        <br><strong>@invoice.Amount.ToString("C0")</strong>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-receipt-cutoff fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Henüz fatura yok</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

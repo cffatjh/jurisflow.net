@@ -1,0 +1,89 @@
+@model List<JurisFlowASP.ViewModels.DocumentListViewModel>
+@{
+    ViewData["Title"] = "Dokümanlar";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex gap-2">
+        <select class="form-select" style="width: 200px;" onchange="location.href='?matterId=' + this.value">
+            <option value="">Tüm Davalar</option>
+            @foreach (var matter in ViewBag.Matters as List<JurisFlowASP.Models.Matter>)
+            {
+                <option value="@matter.Id" selected="@(ViewBag.CurrentMatterId == matter.Id)">@matter.Name</option>
+            }
+        </select>
+
+        <form asp-action="Index" method="get" class="d-flex gap-2">
+            <input type="text" name="search" class="form-control" placeholder="Dosya ara..." value="@ViewBag.Search" style="width: 200px;">
+            <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+
+    <a asp-action="Upload" class="btn btn-primary">
+        <i class="bi bi-upload me-1"></i>Dosya Yükle
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row g-3">
+        @foreach (var doc in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="me-3">
+                                @{
+                                    var iconClass = doc.MimeType.Contains("pdf") ? "bi-file-earmark-pdf text-danger" :
+                                                   doc.MimeType.Contains("word") ? "bi-file-earmark-word text-primary" :
+                                                   doc.MimeType.Contains("image") ? "bi-file-earmark-image text-success" :
+                                                   "bi-file-earmark-text text-muted";
+                                }
+                                <i class="bi @iconClass fs-2"></i>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h6 class="mb-1 text-truncate">@doc.Name</h6>
+                                <p class="small text-muted mb-2 text-truncate">@doc.FileName</p>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-light text-dark">@doc.FileSizeFormatted</span>
+                                    @if (!string.IsNullOrEmpty(doc.MatterName))
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary">@doc.MatterName</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                        <small class="text-muted">@doc.CreatedAt.ToString("dd.MM.yyyy")</small>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-action="Preview" asp-route-id="@doc.Id" class="btn btn-outline-primary" title="Önizle">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-action="Download" asp-route-id="@doc.Id" class="btn btn-outline-success" title="İndir">
+                                <i class="bi bi-download"></i>
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@doc.Id" method="post" class="d-inline" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-danger" title="Sil">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body empty-state">
+            <i class="bi bi-folder-x empty-state-icon"></i>
+            <h5>Henüz doküman yüklenmemiş</h5>
+            <a asp-action="Upload" class="btn btn-primary"><i class="bi bi-upload me-1"></i>İlk Dosyayı Yükle</a>
+        </div>
+    </div>
+}

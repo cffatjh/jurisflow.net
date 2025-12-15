@@ -1,0 +1,112 @@
+@model List<JurisFlowASP.Models.Invoice>
+@{
+    ViewData["Title"] = "Faturalar";
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card bg-light">
+            <div class="card-body">
+                <div class="text-muted small">Taslak</div>
+                <div class="fs-5 fw-bold text-secondary">₺@(((decimal)ViewBag.TotalDraft).ToString("N0"))</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-primary-subtle">
+            <div class="card-body">
+                <div class="text-muted small">Gönderilmiş</div>
+                <div class="fs-5 fw-bold text-primary">₺@(((decimal)ViewBag.TotalSent).ToString("N0"))</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-success-subtle">
+            <div class="card-body">
+                <div class="text-muted small">Ödendi</div>
+                <div class="fs-5 fw-bold text-success">₺@(((decimal)ViewBag.TotalPaid).ToString("N0"))</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-danger-subtle">
+            <div class="card-body">
+                <div class="text-muted small">Vadesi Geçmiş</div>
+                <div class="fs-5 fw-bold text-danger">₺@(((decimal)ViewBag.TotalOverdue).ToString("N0"))</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex gap-2">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                @(ViewBag.CurrentStatus ?? "Tüm Durumlar")
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" asp-action="Index">Tümü</a></li>
+                <li><a class="dropdown-item" asp-action="Index" asp-route-status="Draft">Draft</a></li>
+                <li><a class="dropdown-item" asp-action="Index" asp-route-status="Sent">Sent</a></li>
+                <li><a class="dropdown-item" asp-action="Index" asp-route-status="Paid">Paid</a></li>
+                <li><a class="dropdown-item" asp-action="Index" asp-route-status="Overdue">Overdue</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="TimeEntries" class="btn btn-outline-secondary">
+            <i class="bi bi-clock me-1"></i>Faturalanmamış Masraflar
+        </a>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Yeni Fatura
+        </a>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-modern mb-0">
+                <thead>
+                    <tr>
+                        <th>Fatura No</th>
+                        <th>Müvekkil</th>
+                        <th>Tutar</th>
+                        <th>Vade</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var invoice in Model)
+                    {
+                        <tr>
+                            <td><code>@invoice.Number</code></td>
+                            <td>@invoice.Client?.Name</td>
+                            <td class="fw-semibold">₺@invoice.Amount.ToString("N2")</td>
+                            <td>@invoice.DueDate.ToString("dd.MM.yyyy")</td>
+                            <td><span class="badge badge-status badge-@invoice.Status.ToLower()">@invoice.Status</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-outline-primary"><i class="bi bi-eye"></i></a>
+                                    <a asp-action="Print" asp-route-id="@invoice.Id" class="btn btn-outline-secondary" target="_blank"><i class="bi bi-printer"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body empty-state">
+            <i class="bi bi-receipt empty-state-icon"></i>
+            <h5>Henüz fatura oluşturulmamış</h5>
+            <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>İlk Faturayı Oluştur</a>
+        </div>
+    </div>
+}

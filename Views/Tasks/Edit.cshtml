@@ -1,0 +1,91 @@
+@model JurisFlowASP.Models.Task
+@{
+    ViewData["Title"] = "Görev Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card form-modern">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Görevi Düzenle</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="MatterId" />
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Görev Başlığı *</label>
+                            <input asp-for="Title" class="form-control" required>
+                             <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                         <div class="col-md-6">
+                            <label class="form-label">Durum</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="To Do">To Do</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Review">Review</option>
+                                <option value="Done">Done</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Atanan Kişi</label>
+                            <select asp-for="AssignedToId" class="form-select">
+                                <option value="">Seçin...</option>
+                                @foreach (var user in ViewBag.Users as List<JurisFlowASP.Models.User>)
+                                {
+                                    <option value="@user.Id">@user.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Son Tarih</label>
+                            <input asp-for="DueDate" type="date" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Öncelik</label>
+                            <select asp-for="Priority" class="form-select">
+                                <option value="Low">Düşük</option>
+                                <option value="Medium">Orta</option>
+                                <option value="High">Yüksek</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4 border-danger">
+            <div class="card-body">
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Bu görevi silmek istediğinize emin misiniz?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash me-1"></i>Görevi Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+@model JurisFlowASP.Models.Matter
+@{
+    Layout = "~/Views/ClientPortal/_PortalLayout.cshtml";
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="mb-3">
+    <a asp-action="Matters" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Geri
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Matter Info -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.Name</h5>
+                    @{
+                        var statusClass = Model.Status switch
+                        {
+                            "Open" => "bg-success",
+                            "Pending" => "bg-warning text-dark",
+                            "Trial" => "bg-info",
+                            "Closed" => "bg-secondary",
+                            _ => "bg-primary"
+                        };
+                    }
+                    <span class="badge @statusClass fs-6">@Model.Status</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Dosya Numarası</label>
+                        <p class="fw-semibold mb-0">@Model.CaseNumber</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Uzmanlık Alanı</label>
+                        <p class="fw-semibold mb-0">@Model.PracticeArea</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Sorumlu Avukat</label>
+                        <p class="fw-semibold mb-0">@Model.ResponsibleAttorney</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Açılış Tarihi</label>
+                        <p class="fw-semibold mb-0">@Model.OpenDate.ToString("dd MMMM yyyy")</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="col-12">
+                            <label class="text-muted small">Açıklama</label>
+                            <p class="mb-0">@Model.Description</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-file-earmark me-2"></i>Dokümanlar (@(Model.Documents?.Count ?? 0))</h6>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Documents?.Any() == true)
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var doc in Model.Documents)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    <strong>@doc.Name</strong>
+                                    <small class="text-muted ms-2">@doc.CreatedAt.ToString("dd MMM yyyy")</small>
+                                </div>
+                                <a href="/Documents/Download/@doc.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-file-earmark-x fs-3"></i>
+                        <p class="mb-0 mt-2">Henüz doküman yok</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Upcoming Events -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Yaklaşan Etkinlikler</h6>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Events?.Any() == true)
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var evt in Model.Events.Where(e => e.Date >= DateTime.Now).OrderBy(e => e.Date).Take(5))
+                        {
+                            var typeClass = evt.Type switch
+                            {
+                                "Court" => "text-danger",
+                                "Meeting" => "text-primary",
+                                "Deadline" => "text-warning",
+                                _ => "text-secondary"
+                            };
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span class="@typeClass"><i class="bi bi-circle-fill me-2" style="font-size: 0.5rem;"></i>@evt.Title</span>
+                                </div>
+                                <small class="text-muted">@evt.Date.ToString("dd MMM yyyy HH:mm")</small>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-3 text-muted">
+                        <small>Yaklaşan etkinlik yok</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

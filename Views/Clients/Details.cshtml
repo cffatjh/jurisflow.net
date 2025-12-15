@@ -1,0 +1,151 @@
+@model JurisFlowASP.Models.Client
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>Tüm Müvekkiller
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <!-- Client Profile Card -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <div class="avatar-circle avatar-lg bg-primary text-white mx-auto mb-3">
+                    @Model.Name.Substring(0, 1).ToUpper()
+                </div>
+                <h5 class="card-title">@Model.Name</h5>
+                <p class="text-muted mb-1">@Model.Company</p>
+                <span class="badge badge-status badge-@Model.Status.ToLower()">@Model.Status</span>
+
+                <div class="mt-4 d-grid gap-2">
+                    <a href="mailto:@Model.Email" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-envelope me-2"></i>E-posta Gönder
+                    </a>
+                    @if (Model.PortalAccess)
+                    {
+                         <form asp-action="SendPortalPassword" asp-route-id="@Model.Id" method="post" class="d-grid">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-key me-2"></i>Şifre Sıfırla
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="TogglePortalAccess" asp-route-id="@Model.Id" method="post" class="d-grid">
+                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-door-open me-2"></i>Portal Erişimi Ver
+                            </button>
+                        </form>
+                    }
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-pencil me-2"></i>Düzenle
+                    </a>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <i class="bi bi-envelope text-muted me-2"></i> @Model.Email
+                </li>
+                @if (!string.IsNullOrEmpty(Model.Phone))
+                {
+                    <li class="list-group-item">
+                        <i class="bi bi-telephone text-muted me-2"></i> @Model.Phone
+                    </li>
+                }
+                @if (!string.IsNullOrEmpty(Model.Address))
+                {
+                    <li class="list-group-item">
+                        <i class="bi bi-geo-alt text-muted me-2"></i> @Model.Address
+                    </li>
+                }
+                <li class="list-group-item">
+                    <i class="bi bi-person-badge text-muted me-2"></i> @(Model.Type == "Corporate" ? "Kurumsal" : "Bireysel")
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Matters -->
+        <div class="card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-briefcase me-2"></i>Davalar (@Model.Matters.Count)</h5>
+                <a asp-controller="Matters" asp-action="Create" asp-route-clientId="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus"></i> Yeni Dava
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Matters.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var matter in Model.Matters)
+                        {
+                            <a asp-controller="Matters" asp-action="Details" asp-route-id="@matter.Id" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">@matter.Name</h6>
+                                    <small class="text-muted">@matter.CaseNumber</small>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <small class="text-muted">@matter.PracticeArea</small>
+                                    <span class="badge badge-status badge-@matter.Status.ToLower()">@matter.Status</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="p-3 text-center text-muted">Kayıtlı dava yok.</div>
+                }
+            </div>
+        </div>
+
+        <!-- Invoices -->
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Faturalar</h5>
+                 <a asp-controller="Billing" asp-action="Create" asp-route-clientId="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus"></i> Yeni Fatura
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Invoices.Any())
+                {
+                    <table class="table table-sm table-hover mb-0">
+                         <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tarih</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var inv in Model.Invoices)
+                            {
+                                <tr>
+                                    <td><a asp-controller="Billing" asp-action="Details" asp-route-id="@inv.Id">@inv.Number</a></td>
+                                    <td>@inv.DueDate.ToString("dd.MM.yyyy")</td>
+                                    <td>₺@inv.Amount.ToString("N2")</td>
+                                    <td><span class="badge badge-status badge-@inv.Status.ToLower()">@inv.Status</span></td>
+                                    <td>
+                                        <a asp-controller="Billing" asp-action="Print" asp-route-id="@inv.Id" target="_blank" class="btn btn-sm btn-link"><i class="bi bi-printer"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted text-center mb-0">Fatura bulunamadı.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

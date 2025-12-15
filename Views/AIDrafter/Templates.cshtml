@@ -1,0 +1,107 @@
+@model List<JurisFlowASP.Models.DocumentTemplate>
+@{
+    ViewData["Title"] = "Belge Şablonları";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="bi bi-file-earmark-text me-2"></i>Belge Şablonları</h4>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTemplateModal">
+        <i class="bi bi-plus-lg me-1"></i> Yeni Şablon
+    </button>
+</div>
+
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-file-earmark-plus fs-1 text-muted"></i>
+                    <p class="text-muted mt-3">Henüz şablon oluşturulmamış</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTemplateModal">
+                        <i class="bi bi-plus-lg me-1"></i> İlk Şablonu Oluştur
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var template in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <span class="badge bg-primary">@template.Category</span>
+                            @if (template.IsActive)
+                            {
+                                <span class="badge bg-success">Aktif</span>
+                            }
+                        </div>
+                        <h5 class="card-title">@template.Name</h5>
+                        <p class="card-text text-muted small">@(template.Description ?? "Açıklama yok")</p>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-calendar me-1"></i>@template.CreatedAt.ToString("dd MMM yyyy")
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a asp-action="Index" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-magic me-1"></i> Kullan
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<!-- New Template Modal -->
+<div class="modal fade" id="newTemplateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Belge Şablonu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CreateTemplate" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Şablon Adı *</label>
+                            <input type="text" name="name" class="form-control" required placeholder="Örn: Tahliye Davası Dilekçesi" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kategori *</label>
+                            <select name="category" class="form-select" required>
+                                <option value="Dilekçe">Dilekçe</option>
+                                <option value="Sözleşme">Sözleşme</option>
+                                <option value="İhtarname">İhtarname</option>
+                                <option value="Vekaletname">Vekaletname</option>
+                                <option value="Savunma">Savunma</option>
+                                <option value="Diğer">Diğer</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <input type="text" name="description" class="form-control" placeholder="Şablon hakkında kısa açıklama" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Şablon İçeriği *</label>
+                            <textarea name="content" class="form-control" rows="12" required 
+                                      placeholder="{{MAHKEME_ADI}} SAYIN HAKİMLİĞİNE&#10;&#10;DAVACI: {{DAVACI_ADI}}&#10;DAVALI: {{DAVALI_ADI}}&#10;..."></textarea>
+                            <small class="text-muted">Değişkenler için {{DEGISKEN_ADI}} formatını kullanın</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

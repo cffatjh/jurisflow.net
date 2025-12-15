@@ -1,0 +1,203 @@
+@model List<JurisFlowASP.Models.Client>
+@{
+    ViewData["Title"] = "Müvekkiller";
+    var totalClients = Model.Count;
+    var activeClients = Model.Count(c => c.Status == "Active");
+    var corporateCount = Model.Count(c => c.Type == "Corporate");
+    var individualCount = Model.Count(c => c.Type == "Individual");
+}
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                         style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="bi bi-people text-white"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold" style="color: #6366f1;">@totalClients</div>
+                        <small class="text-muted">Toplam</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(74, 222, 128, 0.1) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-25 d-flex align-items-center justify-content-center me-3" 
+                         style="width: 48px; height: 48px;">
+                        <i class="bi bi-check-circle text-success"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-success">@activeClients</div>
+                        <small class="text-muted">Aktif</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-25 d-flex align-items-center justify-content-center me-3" 
+                         style="width: 48px; height: 48px;">
+                        <i class="bi bi-building text-primary"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-primary">@corporateCount</div>
+                        <small class="text-muted">Kurumsal</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-25 d-flex align-items-center justify-content-center me-3" 
+                         style="width: 48px; height: 48px;">
+                        <i class="bi bi-person text-warning"></i>
+                    </div>
+                    <div>
+                        <div class="fs-3 fw-bold text-warning">@individualCount</div>
+                        <small class="text-muted">Bireysel</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters & Actions -->
+<div class="card mb-4">
+    <div class="card-body py-3">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap gap-2">
+                    <!-- Status Filter -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-funnel me-1"></i>@(ViewBag.CurrentStatus ?? "Tüm Durumlar")
+                        </button>
+                        <ul class="dropdown-menu shadow-lg">
+                            <li><a class="dropdown-item" asp-action="Index"><i class="bi bi-grid me-2"></i>Tümü</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" asp-action="Index" asp-route-status="Active"><span class="text-success me-2">●</span>Active</a></li>
+                            <li><a class="dropdown-item" asp-action="Index" asp-route-status="Inactive"><span class="text-secondary me-2">●</span>Inactive</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Type Filter -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-filter me-1"></i>@(ViewBag.CurrentType ?? "Tüm Türler")
+                        </button>
+                        <ul class="dropdown-menu shadow-lg">
+                            <li><a class="dropdown-item" asp-action="Index">Tümü</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" asp-action="Index" asp-route-type="Individual"><i class="bi bi-person me-2"></i>Bireysel</a></li>
+                            <li><a class="dropdown-item" asp-action="Index" asp-route-type="Corporate"><i class="bi bi-building me-2"></i>Kurumsal</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Search -->
+                    <form asp-action="Index" method="get" class="d-flex flex-grow-1" style="max-width: 350px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="search" class="form-control border-start-0" placeholder="Müvekkil ara..." value="@ViewBag.Search">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>Yeni Müvekkil
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row g-4">
+        @foreach (var client in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="avatar-circle me-3" style="width: 56px; height: 56px; font-size: 1.25rem;">
+                                @client.Name.Substring(0, 1).ToUpper()
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h5 class="mb-1">
+                                    <a asp-action="Details" asp-route-id="@client.Id" class="text-decoration-none text-dark">
+                                        @client.Name
+                                    </a>
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="bi bi-@(client.Type == "Corporate" ? "building" : "person") me-1"></i>@client.Type
+                                    </span>
+                                    <span class="badge badge-status badge-@client.Status.ToLower()">@client.Status</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center text-muted small mb-2">
+                                <i class="bi bi-envelope me-2"></i>
+                                <span class="text-truncate">@client.Email</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(client.Phone))
+                            {
+                                <div class="d-flex align-items-center text-muted small mb-2">
+                                    <i class="bi bi-telephone me-2"></i>
+                                    <span>@client.Phone</span>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(client.Company))
+                            {
+                                <div class="d-flex align-items-center text-muted small">
+                                    <i class="bi bi-building me-2"></i>
+                                    <span>@client.Company</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 pt-0">
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@client.Id" class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="bi bi-eye me-1"></i>Detay
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@client.Id" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body empty-state py-5">
+            <i class="bi bi-people empty-state-icon"></i>
+            <h5 class="mt-4 mb-2">Henüz müvekkil oluşturulmamış</h5>
+            <p class="text-muted mb-4">İlk müvekkilinizi ekleyerek başlayın.</p>
+            <a asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-lg me-1"></i>İlk Müvekkili Ekle
+            </a>
+        </div>
+    </div>
+}

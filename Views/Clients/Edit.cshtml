@@ -1,0 +1,90 @@
+@model JurisFlowASP.Models.Client
+@{
+    ViewData["Title"] = "Müvekkil Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card form-modern">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Müvekkil Düzenle: @Model.Name</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ad Soyad / Firma Adı *</label>
+                            <input asp-for="Name" class="form-control" required>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">E-posta</label>
+                            <input asp-for="Email" type="email" class="form-control" readonly disabled title="E-posta değiştirilemez">
+                            <small class="text-muted">E-posta adresi değiştirilemez.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Telefon</label>
+                            <input asp-for="Phone" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Şirket Adı</label>
+                            <input asp-for="Company" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Tür</label>
+                            <select asp-for="Type" class="form-select">
+                                <option value="Individual">Bireysel</option>
+                                <option value="Corporate">Kurumsal</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Durum</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Aktif</option>
+                                <option value="Inactive">Pasif</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Adres</label>
+                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4 border-danger">
+            <div class="card-header bg-danger-subtle text-danger border-0">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Tehlikeli Bölge</h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">Müvekkili silerseniz, ilişkili tüm davalar, görevler ve faturalar da silinecektir.</p>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('BU İŞLEM GERİ ALINAMAZ! @Model.Name adlı müvekkili ve tüm verilerini silmek istediğinize emin misiniz?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash me-1"></i>Müvekkili Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

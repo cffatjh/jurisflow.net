@@ -1,0 +1,165 @@
+@model IEnumerable<JurisFlowASP.Models.Lead>
+@{
+    ViewData["Title"] = "CRM";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4><i class="bi bi-people me-2"></i>Potansiyel Müşteriler (Leads)</h4>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newLeadModal">
+        <i class="bi bi-plus-lg me-1"></i>Yeni Lead
+    </button>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card bg-primary-subtle">
+            <div class="card-body">
+                <div class="text-muted small">Yeni</div>
+                <div class="fs-4 fw-bold text-primary">@Model.Count(l => l.Status == "New")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-warning-subtle">
+            <div class="card-body">
+                <div class="text-muted small">İletişimde</div>
+                <div class="fs-4 fw-bold text-warning">@Model.Count(l => l.Status == "Contacted")</div>
+            </div>
+        </div>
+    </div>
+     <div class="col-md-3">
+        <div class="card stat-card bg-info-subtle">
+            <div class="card-body">
+                <div class="text-muted small">Nitelikli</div>
+                <div class="fs-4 fw-bold text-info">@Model.Count(l => l.Status == "Qualified")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-success-subtle">
+            <div class="card-body">
+                <div class="text-muted small">Kazanılan</div>
+                <div class="fs-4 fw-bold text-success">@Model.Count(l => l.Status == "Converted")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>E-posta / Telefon</th>
+                    <th>Kaynak</th>
+                    <th>Değer</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var lead in Model)
+                {
+                    <tr>
+                        <td class="fw-medium">@lead.Name</td>
+                        <td>
+                            <div>@lead.Email</div>
+                            <small class="text-muted">@lead.Phone</small>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">@lead.Source</span></td>
+                        <td>@(lead.EstimatedValue.HasValue ? $"₺{lead.EstimatedValue:N0}" : "-")</td>
+                        <td>
+                            <form asp-action="UpdateStatus" asp-route-id="@lead.Id" method="post" class="d-inline">
+                                <select name="status" class="form-select form-select-sm status-select status-@lead.Status.ToLower()" 
+                                        onchange="this.form.submit()" style="width: 120px;">
+                                    <option value="New" selected="@(lead.Status == "New")">Yeni</option>
+                                    <option value="Contacted" selected="@(lead.Status == "Contacted")">İletişimde</option>
+                                    <option value="Qualified" selected="@(lead.Status == "Qualified")">Nitelikli</option>
+                                    <option value="Lost" selected="@(lead.Status == "Lost")">Kaybedildi</option>
+                                    <option value="Converted" selected="@(lead.Status == "Converted")" disabled>Dönüştürüldü</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            @if (lead.Status != "Converted")
+                            {
+                                <div class="btn-group btn-group-sm">
+                                    <form asp-action="ConvertToClient" asp-route-id="@lead.Id" method="post" onsubmit="return confirm('Bu kaydı müvekkile dönüştürmek istediğinize emin misiniz?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-success" title="Müvekkile Dönüştür">
+                                            <i class="bi bi-person-check-fill"></i>
+                                        </button>
+                                    </form>
+                                     <form asp-action="Delete" asp-route-id="@lead.Id" method="post" onsubmit="return confirm('Silmek istediğinize emin misiniz?');" class="ms-1">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger" title="Sil">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Müvekkil</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- New Lead Modal -->
+<div class="modal fade" id="newLeadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yeni Potansiyel Müşteri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="Create" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Ad Soyad *</label>
+                        <input type="text" name="Name" class="form-control" required>
+                    </div>
+                    <div class="row g-3 mb-3">
+                         <div class="col-6">
+                            <label class="form-label">E-posta</label>
+                            <input type="email" name="Email" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Telefon</label>
+                            <input type="tel" name="Phone" class="form-control">
+                        </div>
+                    </div>
+                     <div class="row g-3 mb-3">
+                         <div class="col-6">
+                            <label class="form-label">Kaynak</label>
+                            <select name="Source" class="form-select">
+                                <option value="Website">Web Sitesi</option>
+                                <option value="Referral">Referans</option>
+                                <option value="Social Media">Sosyal Medya</option>
+                                <option value="Other">Diğer</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Tahmini Değer (₺)</label>
+                            <input type="number" name="EstimatedValue" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notlar</label>
+                        <textarea name="Notes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

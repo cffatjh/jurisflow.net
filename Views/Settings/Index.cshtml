@@ -1,0 +1,131 @@
+@model JurisFlowASP.ViewModels.UserProfileViewModel
+@{
+    ViewData["Title"] = "Ayarlar";
+}
+
+<div class="row">
+    <!-- Sidebar Navigation -->
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="@Url.Action("Index", "Settings")" class="list-group-item list-group-item-action active">
+                        <i class="bi bi-person me-2"></i> Profil
+                    </a>
+                    <a href="@Url.Action("ChangePassword", "Settings")" class="list-group-item list-group-item-action">
+                        <i class="bi bi-key me-2"></i> Şifre Değiştir
+                    </a>
+                    <a href="@Url.Action("Notifications", "Settings")" class="list-group-item list-group-item-action">
+                        <i class="bi bi-bell me-2"></i> Bildirimler
+                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <hr class="my-0">
+                        <a href="@Url.Action("Users", "Settings")" class="list-group-item list-group-item-action">
+                            <i class="bi bi-people me-2"></i> Kullanıcılar
+                        </a>
+                        <a href="@Url.Action("AuditLogs", "Settings")" class="list-group-item list-group-item-action">
+                            <i class="bi bi-journal-text me-2"></i> Denetim Günlükleri
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-person me-2"></i>Profil Bilgileri</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateProfile" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            <div class="avatar-large bg-primary text-white mx-auto mb-3">
+                                @(Model.Name?.Length > 0 ? Model.Name[0].ToString().ToUpper() : "U")
+                            </div>
+                            <small class="text-muted">Profil Fotoğrafı</small>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label asp-for="Name" class="form-label">Ad Soyad *</label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Email" class="form-label">E-posta</label>
+                                    <input asp-for="Email" class="form-control" readonly />
+                                    <small class="text-muted">E-posta değiştirilemez</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="mb-3"><i class="bi bi-telephone me-2"></i>İletişim Bilgileri</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label">Telefon</label>
+                            <input asp-for="Phone" class="form-control" placeholder="+90 555 123 4567" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Mobile" class="form-label">Cep Telefonu</label>
+                            <input asp-for="Mobile" class="form-control" placeholder="+90 555 123 4567" />
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3"><i class="bi bi-geo-alt me-2"></i>Adres</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label asp-for="Address" class="form-label">Adres</label>
+                            <input asp-for="Address" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label">Şehir</label>
+                            <input asp-for="City" class="form-control" />
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3"><i class="bi bi-briefcase me-2"></i>Mesleki Bilgiler</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="BarNumber" class="form-label">Baro Sicil No</label>
+                            <input asp-for="BarNumber" class="form-control" />
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Bio" class="form-label">Hakkında</label>
+                            <textarea asp-for="Bio" class="form-control" rows="3" placeholder="Kısa biyografi..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="/" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 600;
+    }
+</style>

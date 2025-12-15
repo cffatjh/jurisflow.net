@@ -1,0 +1,8 @@
+﻿C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Controllers\TasksController.cs(221,9): error CS0117: 'TaskCardViewModel' bir 'AssignedToId' tan─▒m─▒ i├ğermiyor [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Controllers\ClientPortalController.cs(39,92): error CS1061: 'Client' bir 'PortalEnabled' tan─▒m─▒ i├ğermiyor ve 'Client' t├╝r├╝nde bir ilk ba─ş─▒ms─▒z de─şi┼şken kabul eden hi├ğbir eri┼şilebilir 'PortalEnabled' geni┼şletme y├Ântemi bulunamad─▒ (bir kullanma y├Ânergeniz veya derleme ba┼şvurunuz eksik olabilir mi?) [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+
+Olu┼şturma BA┼ŞARISIZ OLDU.
+    11 Uyar─▒
+    2 Hata
+
+Ge├ğen S├╝re 00:00:01.64

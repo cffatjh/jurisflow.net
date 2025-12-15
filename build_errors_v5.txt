@@ -1,0 +1,8 @@
+﻿C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\_TaskCard.cshtml(26,42): error CS1061: 'TaskCardViewModel' bir 'AssignedTo' tan─▒m─▒ i├ğermiyor ve 'TaskCardViewModel' t├╝r├╝nde bir ilk ba─ş─▒ms─▒z de─şi┼şken kabul eden hi├ğbir eri┼şilebilir 'AssignedTo' geni┼şletme y├Ântemi bulunamad─▒ (bir kullanma y├Ânergeniz veya derleme ba┼şvurunuz eksik olabilir mi?) [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\Views\Tasks\_TaskCard.cshtml(29,24): error CS1061: 'TaskCardViewModel' bir 'AssignedTo' tan─▒m─▒ i├ğermiyor ve 'TaskCardViewModel' t├╝r├╝nde bir ilk ba─ş─▒ms─▒z de─şi┼şken kabul eden hi├ğbir eri┼şilebilir 'AssignedTo' geni┼şletme y├Ântemi bulunamad─▒ (bir kullanma y├Ânergeniz veya derleme ba┼şvurunuz eksik olabilir mi?) [C:\Users\cffat\OneDrive\Masa├╝st├╝\racer\jurisflow2\JurisFlowASP\JurisFlowASP.csproj]
+
+Olu┼şturma BA┼ŞARISIZ OLDU.
+    11 Uyar─▒
+    2 Hata
+
+Ge├ğen S├╝re 00:00:01.59

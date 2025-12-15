@@ -1,0 +1,117 @@
+@model JurisFlowASP.Models.Matter
+@{
+    ViewData["Title"] = "Dava Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card form-modern">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Dava Düzenle: @Model.Name</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="ClientId" />
+                    <input type="hidden" asp-for="OpenDate" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Dosya Numarası *</label>
+                            <input asp-for="CaseNumber" class="form-control" required>
+                            <span asp-validation-for="CaseNumber" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Dava Adı *</label>
+                            <input asp-for="Name" class="form-control" required>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Sorumlu Avukat *</label>
+                             <select asp-for="ResponsibleAttorney" class="form-select" required>
+                                <option value="">Seçin...</option>
+                                @foreach (var user in ViewBag.Users as List<JurisFlowASP.Models.User>)
+                                {
+                                    <option value="@user.Name">@user.Name (@user.Role)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Uygulama Alanı</label>
+                            <select asp-for="PracticeArea" class="form-select">
+                                <option value="Civil Litigation">Hukuk Davası</option>
+                                <option value="Criminal Defense">Ceza Davası</option>
+                                <option value="Family Law">Aile Hukuku</option>
+                                <option value="Corporate">Şirketler Hukuku</option>
+                                <option value="Estate Planning">Miras Hukuku</option>
+                                <option value="Intellectual Property">Fikri Mülkiyet</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Ücret Yapısı</label>
+                            <select asp-for="FeeStructure" class="form-select">
+                                <option value="Hourly">Saatlik</option>
+                                <option value="Fixed">Sabit</option>
+                                <option value="Contingency">Koşullu</option>
+                            </select>
+                        </div>
+
+                         <div class="col-md-6">
+                            <label class="form-label">Saatlik Ücret (₺)</label>
+                            <input asp-for="BillableRate" type="number" step="0.01" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Trust Bakiyesi (₺)</label>
+                            <input asp-for="TrustBalance" type="number" step="0.01" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Durum</label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Open">Open</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Trial">Trial</option>
+                                <option value="Closed">Closed</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4 border-danger">
+            <div class="card-header bg-danger-subtle text-danger border-0">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Tehlikeli Bölge</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('BU İŞLEM GERİ ALINAMAZ! Davayı silmek istediğinize emin misiniz?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash me-1"></i>Davayı Sil
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,139 @@
+@model JurisFlowASP.Models.Invoice
+@{
+    ViewData["Title"] = "Fatura Detayı";
+}
+
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <a asp-action="Index" class="text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i>Tüm Faturalar
+    </a>
+    <div class="btn-group">
+        <a asp-action="Print" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i>Yazdır
+        </a>
+        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+            Durum Güncelle
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <form asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-status="Sent" method="post">
+                    @Html.AntiForgeryToken()
+                    <button class="dropdown-item" type="submit">Gönderildi Olarak İşaretle</button>
+                </form>
+            </li>
+            <li>
+                 <form asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-status="Paid" method="post">
+                    @Html.AntiForgeryToken()
+                    <button class="dropdown-item" type="submit">Ödendi Olarak İşaretle</button>
+                </form>
+            </li>
+            <li>
+                 <form asp-action="UpdateStatus" asp-route-id="@Model.Id" asp-route-status="Void" method="post">
+                    @Html.AntiForgeryToken()
+                    <button class="dropdown-item text-danger" type="submit">İptal Et</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="card invoice-card form-modern">
+    <div class="card-body p-5">
+        <!-- Header -->
+        <div class="row justify-content-between mb-5">
+            <div class="col-md-6">
+                <h2 class="text-primary fw-bold mb-3">FATURA</h2>
+                <h5 class="mb-1">@Model.Number</h5>
+                <span class="badge badge-status badge-@Model.Status.ToLower()">@Model.Status</span>
+            </div>
+            <div class="col-md-6 text-end">
+                <h4 class="mb-1">JurisFlow Hukuk Bürosu</h4>
+                <div class="text-muted">
+                    Maslak Mah. Büyükdere Cad.<br>
+                    Sarıyer, İstanbul<br>
+                    info@jurisflow.com
+                </div>
+            </div>
+        </div>
+
+        <!-- Meta -->
+        <div class="row justify-content-between mb-5">
+            <div class="col-md-5">
+                <h6 class="text-uppercase text-muted small fw-bold">Sayın</h6>
+                <h5 class="mb-1">@Model.Client?.Name</h5>
+                <div class="text-muted">
+                    @Model.Client?.Address<br>
+                    @Model.Client?.Email
+                </div>
+            </div>
+            <div class="col-md-5 text-end">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="text-muted small fw-bold">Fatura Tarihi</div>
+                        <div>@Model.IssueDate.ToString("dd.MM.yyyy")</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted small fw-bold">Son Ödeme</div>
+                        <div>@Model.DueDate.ToString("dd.MM.yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items -->
+        <div class="table-responsive mb-5">
+            <table class="table border-bottom">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="py-3">Hizmet / Açıklama</th>
+                        <th class="py-3 text-end">Miktar</th>
+                        <th class="py-3 text-end">Birim Fiyat</th>
+                        <th class="py-3 text-end">Toplam</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="py-3">
+                                <div class="fw-medium">Hukuki Danışmanlık</div>
+                                <small class="text-muted">@item.Description</small>
+                            </td>
+                            <td class="py-3 text-end">1</td>
+                            <td class="py-3 text-end">₺@item.Amount.ToString("N2")</td>
+                            <td class="py-3 text-end">₺@item.Amount.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Totals -->
+        <div class="row justify-content-end">
+            <div class="col-md-4">
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="text-muted">Ara Toplam</td>
+                        <td class="text-end">₺@Model.Items.Sum(i => i.Amount).ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">KDV (%20)</td>
+                        <td class="text-end">₺@((Model.Items.Sum(i => i.Amount) * 0.20m).ToString("N2"))</td>
+                    </tr>
+                    <tr class="border-top">
+                        <td class="fs-5 fw-bold">Genel Toplam</td>
+                        <td class="fs-5 fw-bold text-primary text-end">₺@Model.Amount.ToString("N2")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="mt-5">
+                <h6 class="text-muted small fw-bold">Notlar</h6>
+                <p class="text-muted">@Model.Notes</p>
+            </div>
+        }
+    </div>
+</div>

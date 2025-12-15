@@ -1,0 +1,99 @@
+@model List<JurisFlowASP.Models.ClientMessage>
+@{
+    Layout = "~/Views/ClientPortal/_PortalLayout.cshtml";
+    ViewData["Title"] = "Mesajlar";
+    var matters = ViewBag.Matters as List<JurisFlowASP.Models.Matter>;
+}
+
+<div class="row g-4">
+    <!-- Message List -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-chat-dots me-2"></i>Mesajlarım (@Model.Count)</h5>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-chat-square-text fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Henüz mesaj yok</p>
+                        <p class="text-muted">Sağ taraftaki formu kullanarak yeni mesaj gönderebilirsiniz</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var msg in Model)
+                        {
+                            var bgClass = msg.Read ? "" : "bg-light";
+                            <div class="list-group-item @bgClass">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">
+                                            @if (!msg.Read)
+                                            {
+                                                <span class="badge bg-primary me-2">Yeni</span>
+                                            }
+                                            @msg.Subject
+                                        </h6>
+                                        <p class="mb-1 text-muted">@msg.Message</p>
+                                        @if (msg.Matter != null)
+                                        {
+                                            <small class="text-muted">
+                                                <i class="bi bi-folder me-1"></i>@msg.Matter.Name
+                                            </small>
+                                        }
+                                    </div>
+                                    <small class="text-muted">@msg.CreatedAt.ToString("dd MMM HH:mm")</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- New Message Form -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Yeni Mesaj</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="SendMessage" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Konu *</label>
+                        <input type="text" name="subject" class="form-control" required placeholder="Mesaj konusu" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">İlgili Dava</label>
+                        <select name="matterId" class="form-select">
+                            <option value="">Seçiniz (Opsiyonel)</option>
+                            @if (matters != null)
+                            {
+                                @foreach (var matter in matters)
+                                {
+                                    <option value="@matter.Id">@matter.CaseNumber - @matter.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mesaj *</label>
+                        <textarea name="message" class="form-control" rows="5" required placeholder="Mesajınızı yazın..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-send me-1"></i> Gönder
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

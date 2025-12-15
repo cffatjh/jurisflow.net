@@ -1,0 +1,39 @@
+@model JurisFlowASP.ViewModels.TaskCardViewModel
+
+<div class="kanban-card priority-@Model.Priority.ToLower()" data-id="@Model.Id">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="badge badge-status badge-@Model.Priority.ToLower()">@Model.Priority</span>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="text-muted small">
+            <i class="bi bi-pencil"></i>
+        </a>
+    </div>
+    <h6 class="mb-2 fw-medium">@Model.Title</h6>
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <p class="small text-muted mb-2">@(Model.Description.Length > 60 ? Model.Description[..60] + "..." : Model.Description)</p>
+    }
+    <div class="d-flex justify-content-between align-items-center">
+        @if (Model.DueDate.HasValue)
+        {
+            <small class="text-muted">
+                <i class="bi bi-calendar me-1"></i>@Model.DueDate.Value.ToString("dd MMM")
+            </small>
+        }
+        else
+        {
+            <span></span>
+        }
+        @if (!string.IsNullOrEmpty(Model.AssignedTo))
+        {
+            <div class="avatar-circle avatar-sm bg-secondary" style="width: 24px; height: 24px; font-size: 10px;">
+                @Model.AssignedTo[..2].ToUpper()
+            </div>
+        }
+    </div>
+    @if (!string.IsNullOrEmpty(Model.MatterName))
+    {
+        <div class="mt-2">
+            <span class="badge bg-light text-dark small">@Model.MatterName</span>
+        </div>
+    }
+</div>

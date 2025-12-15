@@ -1,0 +1,370 @@
+﻿@model JurisFlowASP.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Welcome Banner -->
+<div class="card mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+    <div class="card-body p-4 text-white">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-2">Hoş Geldiniz, @User.Identity?.Name! 👋</h2>
+                <p class="mb-0 opacity-75">Bugünkü görevlerinizi yönetin ve iş akışınızı takip edin.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a asp-controller="AIDrafter" asp-action="Index" class="btn btn-light btn-lg">
+                    <i class="bi bi-stars me-2"></i> AI ile Belge Oluştur
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card bg-gradient-primary text-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="stat-icon me-3">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <div class="opacity-75 small fw-semibold">Müvekkiller</div>
+                    <div class="fs-2 fw-bold">@Model.TotalClients</div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                <a asp-controller="Clients" asp-action="Index" class="text-white opacity-75 text-decoration-none small">
+                    Tümünü Görüntüle <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card bg-gradient-success text-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="stat-icon me-3">
+                    <i class="bi bi-folder-fill"></i>
+                </div>
+                <div>
+                    <div class="opacity-75 small fw-semibold">Aktif Davalar</div>
+                    <div class="fs-2 fw-bold">@Model.ActiveMatters</div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                <a asp-controller="Matters" asp-action="Index" class="text-white opacity-75 text-decoration-none small">
+                    Tümünü Görüntüle <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card bg-gradient-warning text-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="stat-icon me-3">
+                    <i class="bi bi-check2-square"></i>
+                </div>
+                <div>
+                    <div class="opacity-75 small fw-semibold">Bekleyen Görevler</div>
+                    <div class="fs-2 fw-bold">@Model.PendingTasks</div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                <a asp-controller="Tasks" asp-action="Index" class="text-white opacity-75 text-decoration-none small">
+                    Tümünü Görüntüle <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card bg-gradient-danger text-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="stat-icon me-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div>
+                    <div class="opacity-75 small fw-semibold">Vadesi Geçen</div>
+                    <div class="fs-2 fw-bold">₺@Model.OverdueInvoices.ToString("N0")</div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                <a asp-controller="Billing" asp-action="Index" class="text-white opacity-75 text-decoration-none small">
+                    Faturaları Gör <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="row g-4">
+    <!-- Upcoming Events -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-calendar-event me-2 text-primary"></i>Yaklaşan Etkinlikler
+                </h5>
+                <a asp-controller="Calendar" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-calendar3 me-1"></i> Takvim
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.UpcomingEvents.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var ev in Model.UpcomingEvents)
+                        {
+                            var iconClass = ev.Type.ToLower() switch
+                            {
+                                "court" => "bi-building text-danger",
+                                "meeting" => "bi-camera-video text-primary",
+                                "deadline" => "bi-clock text-warning",
+                                _ => "bi-calendar-event text-secondary"
+                            };
+                            var bgClass = ev.Type.ToLower() switch
+                            {
+                                "court" => "bg-danger",
+                                "meeting" => "bg-primary",
+                                "deadline" => "bg-warning",
+                                _ => "bg-secondary"
+                            };
+                            <div class="list-group-item px-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center @bgClass bg-opacity-10" style="width: 48px; height: 48px;">
+                                            <i class="bi @iconClass fs-5"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-semibold">@ev.Title</h6>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>@ev.Date.ToString("dd MMM yyyy HH:mm")
+                                        </small>
+                                    </div>
+                                    <span class="badge @bgClass">@ev.Type</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state py-5">
+                        <i class="bi bi-calendar-x empty-state-icon"></i>
+                        <p class="mb-0 text-muted">Yaklaşan etkinlik yok</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-list-task me-2 text-warning"></i>Aktif Görevler
+                </h5>
+                <a asp-controller="Tasks" asp-action="Create" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Yeni Görev
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentTasks.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var task in Model.RecentTasks)
+                        {
+                            var priorityClass = task.Priority?.ToLower() switch
+                            {
+                                "high" => "danger",
+                                "medium" => "warning",
+                                "low" => "success",
+                                _ => "secondary"
+                            };
+                            <div class="list-group-item px-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" style="width: 20px; height: 20px; border-radius: 6px;">
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-semibold">@task.Title</h6>
+                                        @if (task.MatterName != null)
+                                        {
+                                            <small class="text-muted">
+                                                <i class="bi bi-folder me-1"></i>@task.MatterName
+                                            </small>
+                                        }
+                                    </div>
+                                    <span class="badge badge-@task.Priority?.ToLower()">@task.Priority</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state py-5">
+                        <i class="bi bi-check-circle empty-state-icon"></i>
+                        <p class="mb-0 text-muted">Tüm görevler tamamlandı!</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Matters Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-folder-fill me-2 text-success"></i>Son Davalar
+                </h5>
+                <a asp-controller="Matters" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-grid me-1"></i> Tümünü Gör
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentMatters.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Dosya No</th>
+                                    <th>Dava Adı</th>
+                                    <th>Müvekkil</th>
+                                    <th>Uzmanlık Alanı</th>
+                                    <th>Durum</th>
+                                    <th>Açılış</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var matter in Model.RecentMatters)
+                                {
+                                    <tr>
+                                        <td><code class="bg-light px-2 py-1 rounded">@matter.CaseNumber</code></td>
+                                        <td>
+                                            <a asp-controller="Matters" asp-action="Details" asp-route-id="@matter.Id" class="text-decoration-none fw-semibold">
+                                                @matter.Name
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle me-2" style="width: 28px; height: 28px; font-size: 0.7rem;">
+                                                    @(matter.ClientName?.Substring(0, 1).ToUpper() ?? "?")
+                                                </div>
+                                                @matter.ClientName
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark">@matter.PracticeArea</span></td>
+                                        <td><span class="badge badge-status badge-@matter.Status.ToLower()">@matter.Status</span></td>
+                                        <td>@matter.OpenDate.ToString("dd.MM.yyyy")</td>
+                                        <td>
+                                            <a asp-controller="Matters" asp-action="Details" asp-route-id="@matter.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state py-5">
+                        <i class="bi bi-folder-x empty-state-icon"></i>
+                        <p class="mb-2 text-muted">Henüz dava oluşturulmamış</p>
+                        <a asp-controller="Matters" asp-action="Create" class="btn btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>İlk Davayı Oluştur
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-transparent py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-lightning-fill me-2 text-warning"></i>Hızlı Eylemler
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="Matters" asp-action="Create" class="card text-decoration-none h-100 hover-lift" style="border: 2px dashed #e2e8f0;">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-folder-plus text-primary fs-5"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark">Yeni Dava</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="Clients" asp-action="Create" class="card text-decoration-none h-100 hover-lift" style="border: 2px dashed #e2e8f0;">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-person-plus text-success fs-5"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark">Yeni Müvekkil</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="Tasks" asp-action="Create" class="card text-decoration-none h-100 hover-lift" style="border: 2px dashed #e2e8f0;">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-plus-square text-warning fs-5"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark">Yeni Görev</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="Documents" asp-action="Upload" class="card text-decoration-none h-100 hover-lift" style="border: 2px dashed #e2e8f0;">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-cloud-upload text-info fs-5"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark">Dosya Yükle</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="AIDrafter" asp-action="Index" class="card text-decoration-none h-100 hover-lift" style="border: 2px dashed #e2e8f0;">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="bi bi-stars text-white fs-5"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark">AI Asistan</h6>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="VideoCall" asp-action="Index" class="card text-decoration-none h-100 hover-lift" style="border: 2px dashed #e2e8f0;">
+                            <div class="card-body text-center py-4">
+                                <div class="rounded-circle bg-danger bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-camera-video text-danger fs-5"></i>
+                                </div>
+                                <h6 class="mb-0 text-dark">Video Görüşme</h6>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

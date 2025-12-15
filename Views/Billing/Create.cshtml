@@ -1,0 +1,108 @@
+@model JurisFlowASP.ViewModels.InvoiceCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Fatura";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card form-modern">
+            <div class="card-header bg-white border-0">
+                <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Yeni Fatura Oluştur</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-3">
+                         <div class="col-md-6">
+                            <label class="form-label">Fatura Numarası *</label>
+                            <input asp-for="Number" class="form-control" placeholder="INV-2024-001" required>
+                             <span asp-validation-for="Number" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Müvekkil *</label>
+                             <select asp-for="ClientId" class="form-select" required onchange="this.form.submit()">
+                                <option value="">Seçin...</option>
+                                @foreach (var client in ViewBag.Clients as List<JurisFlowASP.Models.Client>)
+                                {
+                                    <option value="@client.Id">@client.Name</option>
+                                }
+                            </select>
+                             <span asp-validation-for="ClientId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Vade Tarihi *</label>
+                            <input asp-for="DueDate" type="date" class="form-control" required>
+                        </div>
+                        
+                         <div class="col-md-6">
+                            <label class="form-label">Vergi Oranı (%)</label>
+                            <input asp-for="TaxRate" type="number" step="0.01" class="form-control" value="20">
+                        </div>
+                    </div>
+
+                    <h6 class="mt-4 mb-3">Faturalandırılacak Kalemler</h6>
+                     @if (ViewBag.UnbilledItems != null)
+                     {
+                         var items = ViewBag.UnbilledItems as List<JurisFlowASP.Models.TimeEntry>;
+                         if (items.Any())
+                         {
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="selectAll" checked></th>
+                                            <th>Tarih</th>
+                                            <th>Açıklama</th>
+                                            <th>Süre/Miktar</th>
+                                            <th>Tutar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < items.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" name="SelectedEntryIds" value="@items[i].Id" checked>
+                                                </td>
+                                                <td>@items[i].Date.ToString("dd.MM.yyyy")</td>
+                                                <td>@items[i].Description</td>
+                                                <td>@(items[i].Duration / 60.0) saat</td>
+                                                <td>₺@((items[i].Duration / 60.0m * items[i].Rate).ToString("N2"))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                         }
+                         else
+                         {
+                             <div class="alert alert-info">Bu müvekkil için faturalandırılmamış zaman kaydı bulunamadı.</div>
+                         }
+                     }
+                     else
+                     {
+                         <div class="text-muted fst-italic">Kalemleri görmek için lütfen bir müvekkil seçiniz.</div>
+                     }
+
+                    <div class="col-12 mt-3">
+                        <label class="form-label">Notlar</label>
+                        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>İptal
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Faturayı Oluştur
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

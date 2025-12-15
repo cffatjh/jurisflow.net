@@ -1,0 +1,114 @@
+@model JurisFlowASP.ViewModels.DocumentUploadViewModel
+@{
+    ViewData["Title"] = "Dosya Yükle";
+    var matters = ViewBag.Matters as List<JurisFlowASP.Models.Matter> ?? new();
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Dosya Yükle</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label class="form-label">Dosya *</label>
+                        <div class="border-dashed border-2 border-primary rounded p-5 text-center" id="dropZone">
+                            <input asp-for="File" type="file" class="form-control" id="fileInput" style="display: none;" />
+                            <i class="bi bi-cloud-arrow-up fs-1 text-primary mb-3 d-block"></i>
+                            <p class="mb-2">Dosyayı buraya sürükleyin veya</p>
+                            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileInput').click()">
+                                <i class="bi bi-folder2-open me-1"></i> Dosya Seç
+                            </button>
+                            <p class="text-muted small mt-3 mb-0" id="selectedFile">Seçili dosya yok</p>
+                        </div>
+                        <span asp-validation-for="File" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MatterId" class="form-label">İlgili Dava</label>
+                        <select asp-for="MatterId" class="form-select">
+                            <option value="">Seçiniz (Opsiyonel)</option>
+                            @foreach (var matter in matters)
+                            {
+                                <option value="@matter.Id">@matter.CaseNumber - @matter.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Açıklama</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Dosya hakkında kısa açıklama..."></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Tags" class="form-label">Etiketler</label>
+                        <input asp-for="Tags" class="form-control" placeholder="sözleşme, imzalı, 2024" />
+                        <small class="text-muted">Virgülle ayırarak birden fazla etiket ekleyebilirsiniz</small>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal</a>
+                        <button type="submit" class="btn btn-primary" id="uploadBtn">
+                            <i class="bi bi-upload me-1"></i> Yükle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-dashed {
+    border-style: dashed !important;
+}
+.border-dashed.dragover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+</style>
+
+@section Scripts {
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const selectedFile = document.getElementById('selectedFile');
+
+fileInput.addEventListener('change', function() {
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        const size = (file.size / 1024 / 1024).toFixed(2);
+        selectedFile.innerHTML = `<i class="bi bi-file-earmark me-1"></i> ${file.name} (${size} MB)`;
+        selectedFile.classList.remove('text-muted');
+        selectedFile.classList.add('text-success', 'fw-semibold');
+    }
+});
+
+dropZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', function() {
+    this.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
+    }
+});
+
+document.getElementById('uploadForm').addEventListener('submit', function() {
+    const btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yükleniyor...';
+});
+</script>
+}
